@@ -24,7 +24,7 @@ class Stack_Inventory {
         string *nameAndcategory;
         int *numberAndQty;
         double *priceAndtotal;
-        int n;
+        int n,i;
         InventoryItem inv;
 
     public:
@@ -32,15 +32,15 @@ class Stack_Inventory {
             Strgtop = -1;
             dbletop = -1;
             intop = -1;
-            setarray_Size();
+            getarray_Size();
         }
 
-        void setarray_Size() {
+        void getarray_Size() {
             ifstream File;
             File.open("Inventory.txt");
             n = 0;
             while (File >> inv.item_number >> inv.name >> inv.category >> inv.qty >> inv.price >> inv.total) {
-                n++;
+                n+=4;
             }
             if (n == 0) {
                 n = 999;
@@ -48,6 +48,16 @@ class Stack_Inventory {
             nameAndcategory = new string[n * 2];
             numberAndQty = new int[n * 2];
             priceAndtotal = new double[n * 2];
+            i=0;
+            while(File >> inv.item_number >> inv.name >> inv.category >> inv.qty >> inv.price >> inv.total){
+            	numberAndQty[i]=inv.item_number;
+            	numberAndQty[i+1]=inv.qty;
+				nameAndcategory[i]=inv.name;
+				nameAndcategory[i+1]=inv.category;
+				priceAndtotal[i]=inv.price;
+				priceAndtotal[i+1]=inv.total;
+				i+=2;
+			}
         }
 
         bool push_string(string x) {
@@ -423,14 +433,13 @@ void add_inventory::add() {
     stack.push_dble(in.total);
     cout << endl;
 
-    // Confirm and store to file
     char confirm;
     cout << "Confirm add item (y/n): ";
     cin >> confirm;
     if (confirm == 'y' || confirm == 'Y') {
         stack.store();
     } else {
-        // Optionally, clear the stack or perform other actions
+        
         cout << "Item not added." << endl;
     }
 }
