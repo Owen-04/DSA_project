@@ -1,0 +1,443 @@
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+#include <conio.h>
+#include <cstring>
+using namespace std;
+//Inventory data
+struct InventoryItem 
+{
+    int item_number, qty;
+    string name, category;
+    double price, total;
+};
+
+struct User_Info{
+	string name;
+	string password;
+	string ID;
+};
+
+class Stack_Inventory {
+    private:
+        int intop, Strgtop, dbletop;
+        string *nameAndcategory;
+        int *numberAndQty;
+        double *priceAndtotal;
+        int n;
+        InventoryItem inv;
+
+    public:
+        Stack_Inventory() {
+            Strgtop = -1;
+            dbletop = -1;
+            intop = -1;
+            setarray_Size();
+        }
+
+        void setarray_Size() {
+            ifstream File;
+            File.open("Inventory.txt");
+            n = 0;
+            while (File >> inv.item_number >> inv.name >> inv.category >> inv.qty >> inv.price >> inv.total) {
+                n++;
+            }
+            if (n == 0) {
+                n = 999;
+            }
+            nameAndcategory = new string[n * 2];
+            numberAndQty = new int[n * 2];
+            priceAndtotal = new double[n * 2];
+        }
+
+        bool push_string(string x) {
+            if (Strgtop >= (n - 1)) {
+                cout << "Stack Overflow";
+                return false;
+            } else {
+                nameAndcategory[++Strgtop] = x;
+                return true;
+            }
+        }
+
+        string pop_string() {
+            if (Strgtop < 0) {
+                cout << "Stack Underflow";
+                return "";
+            } else {
+                string x = nameAndcategory[Strgtop--];
+                return x;
+            }
+        }
+
+        string peek_string() {
+            if (Strgtop < 0) {
+                cout << "Stack is Empty";
+                return "";
+            } else {
+                string x = nameAndcategory[Strgtop];
+                return x;
+            }
+        }
+
+        bool isEmpty_string() {
+            return (Strgtop < 0);
+        }
+
+        // For int type data
+        bool push_INT(int x) {
+            if (intop >= (n - 1)) {
+                cout << "Stack Overflow";
+                return false;
+            } else {
+                numberAndQty[++intop] = x;
+                return true;
+            }
+        }
+
+        int pop_INT() {
+            if (intop < 0) {
+                cout << "Stack Underflow";
+                return 0;
+            } else {
+                int x = numberAndQty[intop--];
+                return x;
+            }
+        }
+
+        int peek_INT() {
+            if (intop < 0) {
+                cout << "Stack is Empty";
+                return 0;
+            } else {
+                int x = numberAndQty[intop];
+                return x;
+            }
+        }
+
+        bool isEmpty_INT() {
+            return (intop < 0);
+        }
+
+        // For double type data
+        bool push_dble(double x) {
+            if (dbletop >= (n - 1)) {
+                cout << "Stack Overflow";
+                return false;
+            } else {
+                priceAndtotal[++dbletop] = x;
+                return true;
+            }
+        }
+
+        double pop_dble() {
+            if (dbletop < 0) {
+                cout << "Stack Underflow";
+                return 0;
+            } else {
+                double x = priceAndtotal[dbletop--];
+                return x;
+            }
+        }
+
+        double peek_dble() {
+            if (dbletop < 0) {
+                cout << "Stack is Empty";
+                return 0;
+            } else {
+                double x = priceAndtotal[dbletop];
+                return x;
+            }
+        }
+
+        bool isEmpty_dble() {
+            return (dbletop < 0);
+        }
+
+        void store() {
+            InventoryItem tempItem;
+            int existingItemNumbers[1000]; 
+            int exisCount = 0;
+
+            ifstream inputFile("Inventory.txt");
+            while (inputFile >> tempItem.item_number >> tempItem.name >> tempItem.category >> tempItem.qty >> tempItem.price >> tempItem.total) {
+                existingItemNumbers[exisCount++] = tempItem.item_number;
+            }
+            inputFile.close();
+
+            fstream file;
+            file.open("Inventory.txt", ios::app);
+
+            int i = 0;
+            while (i <= intop) {
+                int currentItemNumber = numberAndQty[i];
+                bool isExis = false;//check existing or not
+
+                for (int j = 0; j < exisCount; j++) {
+                    if (existingItemNumbers[j] == currentItemNumber) {
+                        isExis = true;
+                        break;
+                    }
+                }
+
+
+                if (!isExis) {
+                    file << numberAndQty[i] << " " << nameAndcategory[i] << " " << nameAndcategory[i + 1] << " "<< numberAndQty[i + 1] << " " << priceAndtotal[i] << " " << priceAndtotal[i + 1] << endl;
+                    existingItemNumbers[exisCount++] = currentItemNumber;
+                }
+                i += 2;
+            }
+            file.close();
+        }
+};
+
+class Stack_user{
+	private:
+		int top;
+		string *a;
+		int n;
+		User_Info u;
+	public:
+		Stack_user(){
+			top=-1;
+			setarray_Size();
+		}
+		void setarray_Size(){
+			ifstream File;
+			File.open("Inventory.txt");
+			n=0;
+			while(File>>u.ID>>u.name>>u.password){
+				n++;
+			}
+			a = new string[n];
+		}
+		
+		bool push(string x)
+		{
+		    if (top >= (n - 1)) {
+		        cout << "Stack Overflow";
+		        return false;
+		    }
+		    else {
+		        a[++top] = x;
+		        cout << x << " pushed into stack\n";
+		        return true;
+		    }
+		}
+		
+		string pop()
+		{
+		    if (top < 0) {
+		        cout << "Stack Underflow";
+		        return 0;
+		    }
+		    else {
+		        string x = a[top--];
+		        return x;
+		    }
+		}
+		string peek()
+		{
+		    if (top < 0) {
+		        cout << "Stack is Empty";
+		        return 0;
+		    }
+		    else {
+		        string x = a[top];
+		        return x;
+		    }
+		}
+		
+		bool isEmpty()
+		{
+		    return (top < 0);
+		}
+
+};
+
+//display list class
+class display_list 
+{
+	private:
+		InventoryItem in;
+	    ifstream File;
+	    
+	public:
+	    void view_list() 
+		{
+	        cout << "----------------------------------------------" << endl;
+	        cout << "List of Inventory in Warehouse" << endl;
+	        cout << "----------------------------------------------" << endl;
+	        File.open("Inventory.txt");
+	        if (!File) 
+			{
+	            cout << "No inventory found." << endl;
+	            return;
+	        }
+	        cout << "Item Number" << setw(20) << "Item Name" << setw(20) << "Item Category" << setw(20) << "Item QTY" << setw(20) << "Item Unit Price" << setw(20) << "Total Price" << endl;
+	        while (File >> in.item_number >> in.name >> in.category >> in.qty >> in.price >> in.total) {
+	            cout << in.item_number << setw(20) << in.name << setw(20) << in.category << setw(20) << in.qty << setw(20) << in.price << setw(20) << in.total << endl;
+	        }
+	        File.close();
+	    }
+};
+
+class add_inventory 
+{
+	private:
+	    display_list d;
+	    InventoryItem in;
+	    fstream File;
+	    int choice;
+	    Stack_Inventory stack;
+	    
+	public:
+	    add_inventory() : choice(0), File("Inventory.txt", ios::app) {}
+	
+	    void subMenu();
+	    void add();
+};
+
+// Main Menu
+class Menu 
+{
+	private:
+	    add_inventory a;
+	    display_list v;
+
+	public:
+	    void main_menu() 
+		{
+	        int choice = 0;
+	        int action = 0;
+	        do {
+	            cout << "----------------------------------------------" << endl;
+	            cout << "Welcome to Warehouse Inventory Management" << endl;
+	            cout << "----------------------------------------------" << endl;
+	            cout << "1. Add Inventory" << endl;
+	            cout << "2. Inventory List (Unsorted)" << endl;
+	            cout << "3. Edit Inventory  " << endl;
+	            cout << "4. Delete Inventory" << endl;
+	            cout << "5. Search Inventory" << endl;
+	            cout << "6. Exit" << endl;
+	            cout << "Enter choice: ";
+	            cin >> choice;
+	
+	            while (choice < 1 || choice > 6) 
+				{
+	                cout << "Invalid Input. Please Enter again: ";
+	                cin >> choice;
+	            }
+	            
+	
+	            if (choice == 1) 
+				{
+	                a.subMenu();
+	            } 
+				else if (choice == 2) 
+				{
+					cout<<endl;
+					cout<<endl;
+	                v.view_list();
+	                cout<<endl;
+	                cout<<endl;
+	            } 
+				else if (choice == 3) 
+				{
+
+	            } 
+				else if (choice == 4) 
+				{
+				
+	            }
+	        }while (choice !=6);
+	        
+	    }
+};
+
+// Definition of the display function outside the add_inventory class so it can access the Menu
+void add_inventory::subMenu() 
+{
+    Menu M;
+    do{
+        cout << "------------------------------------" << endl;
+        cout << "Add Inventory Page" << endl;
+        cout << "------------------------------------" << endl;
+        cout << "1. Add Inventory" << endl;
+        cout << "2. Inventory List" << endl;
+        cout << "3. Back to Main Menu" << endl;
+        cout << "Enter choice: ";
+        cin >> choice;
+
+        if (choice < 1 || choice > 3) 
+		{
+            cout << "Invalid Input. Please Enter again." << endl;
+        }
+	    if (choice == 1) 
+		{
+			cout<<endl;
+	        add();
+	        cout<<endl;
+	    } 
+		else if (choice == 2) 
+		{
+			cout<<endl;
+	        d.view_list();
+	        cout<<endl;
+	    } 
+
+    }while (choice!=3);
+	system("cls");
+	M.main_menu();	
+
+
+}
+// Definition of the add function outside the add_inventory class so it can access the Menu
+void add_inventory::add() {
+    cout << "Enter the item number: ";
+    cin >> in.item_number;
+    stack.push_INT(in.item_number);
+    cout << endl;
+
+    cout << "Enter the name: ";
+    cin >> in.name;
+    stack.push_string(in.name);
+    cout << endl;
+
+    cout << "Enter the category: ";
+    cin >> in.category;
+    stack.push_string(in.category);
+    cout << endl;
+
+    cout << "Enter the QTY: ";
+    cin >> in.qty;
+    stack.push_INT(in.qty);
+    cout << endl;
+
+    cout << "Enter the unit price: RM";
+    cin >> in.price;
+    stack.push_dble(in.price);
+    cout << endl;
+
+    in.total = in.qty * in.price;
+    stack.push_dble(in.total);
+    cout << endl;
+
+    // Confirm and store to file
+    char confirm;
+    cout << "Confirm add item (y/n): ";
+    cin >> confirm;
+    if (confirm == 'y' || confirm == 'Y') {
+        stack.store();
+    } else {
+        // Optionally, clear the stack or perform other actions
+        cout << "Item not added." << endl;
+    }
+}
+
+int main() 
+{
+    Menu n;
+    n.main_menu();
+    return 0;
+}
