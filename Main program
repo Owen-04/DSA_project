@@ -3,6 +3,7 @@
 #include <iomanip>
 #include <conio.h>
 #include <cstring>
+#include<vector>
 using namespace std;
 //Inventory data
 struct InventoryItem 
@@ -17,6 +18,108 @@ struct User_Info{
 	string password;
 	string ID;
 };
+
+class QuickSort{
+	private:
+	    int* itemNumbers;
+	    int* indices;
+		int n,confirm;
+		InventoryItem inv;
+	
+	public:
+		QuickSort(){
+			n=0;
+			confirm=0;
+		}
+		
+	    ~QuickSort() {
+	        delete[] itemNumbers;
+	        delete[] indices;
+	    }
+	
+	    void getarray() {
+	        ifstream file("Inventory.txt");
+	        n = 0;
+	        while (file >> inv.item_number >> inv.name >> inv.category >> inv.qty >> inv.price >> inv.total) {
+	            n++;
+	        }
+	        file.close();
+	
+	        itemNumbers = new int[n];
+	        indices = new int[n];
+	
+	        file.open("Inventory.txt");
+	        int i = 0;
+	        while (file >> inv.item_number >> inv.name >> inv.category >> inv.qty >> inv.price >> inv.total) {
+	            itemNumbers[i] = inv.item_number;
+	            indices[i] = i;//track of the original positions of the items in the file
+	            i++;
+	        }
+	        file.close();
+	    }
+		
+		int partition(int start, int end){
+	        int pivot = itemNumbers[start];
+	        int count = 0;
+	        for (int i = start + 1; i <= end; i++) {
+	            if (itemNumbers[i] <= pivot)
+	                count++;
+	        }
+	
+	        int pivotIndex = start + count;
+	        swap(itemNumbers[pivotIndex], itemNumbers[start]);
+	        swap(indices[pivotIndex], indices[start]);
+	
+	        int i = start, j = end;
+	
+	        while (i < pivotIndex && j > pivotIndex) {
+	            while (itemNumbers[i] <= pivot) {
+	                i++;
+	            }
+	            while (itemNumbers[j] > pivot) {
+	                j--;
+	            }
+	            if (i < pivotIndex && j > pivotIndex) {
+	                swap(itemNumbers[i], itemNumbers[j]);
+	                swap(indices[i], indices[j]);
+	            }
+	        }
+	        return pivotIndex;
+	    }
+	
+	    void quickSort(int start, int end) {
+	        if (start >= end)
+	            return;
+	
+	        int p = partition(start, end);
+	
+	        quickSort(start, p - 1);
+	        quickSort(p + 1, end);
+	    }
+	
+	    void display_sorted() {
+	        getarray();
+	        quickSort(0, n - 1);
+	
+	        InventoryItem* items = new InventoryItem[n];
+	        ifstream file("Inventory.txt");
+	        int i = 0;
+	        while (file >> items[i].item_number >> items[i].name >> items[i].category >> items[i].qty >> items[i].price >> items[i].total) {
+	            i++;
+	        }
+	        file.close();
+	
+	        cout << "Item Number" << setw(20) << "Item Name" << setw(20) << "Item Category" << setw(20) << "Item QTY" << setw(20) << "Item Unit Price" << setw(20) << "Total Price" << endl;
+	        for (int i = 0; i < n; ++i) {
+	            int idx = indices[i];
+	            cout << items[idx].item_number << setw(20) << items[idx].name << setw(20) << items[idx].category << setw(20) << items[idx].qty << setw(20) << items[idx].price << setw(20) << items[idx].total << endl;
+	        }
+	
+	        delete[] items;
+	    }
+};
+
+
 
 class Stack_Inventory {
     private:
@@ -42,9 +145,6 @@ class Stack_Inventory {
             while (File >> inv.item_number >> inv.name >> inv.category >> inv.qty >> inv.price >> inv.total) {
                 n+=4;
             }
-            if (n == 0) {
-                n = 999;
-            }
             nameAndcategory = new string[n * 2];
             numberAndQty = new int[n * 2];
             priceAndtotal = new double[n * 2];
@@ -58,6 +158,7 @@ class Stack_Inventory {
 				priceAndtotal[i+1]=inv.total;
 				i+=2;
 			}
+			File.close();
         }
 
         bool push_string(string x) {
@@ -314,7 +415,8 @@ class Menu
 	private:
 	    add_inventory a;
 	    display_list v;
-
+		QuickSort q;
+		
 	public:
 	    void main_menu() 
 		{
@@ -326,14 +428,15 @@ class Menu
 	            cout << "----------------------------------------------" << endl;
 	            cout << "1. Add Inventory" << endl;
 	            cout << "2. Inventory List (Unsorted)" << endl;
-	            cout << "3. Edit Inventory  " << endl;
-	            cout << "4. Delete Inventory" << endl;
-	            cout << "5. Search Inventory" << endl;
-	            cout << "6. Exit" << endl;
+	            cout<<"3. Inventory List(Sorted) "<<endl;
+	            cout << "4. Edit Inventory  " << endl;
+	            cout << "5. Delete Inventory" << endl;
+	            cout << "6. Search Inventory" << endl;
+	            cout << "7. Exit" << endl;
 	            cout << "Enter choice: ";
 	            cin >> choice;
 	
-	            while (choice < 1 || choice > 6) 
+	            while (choice < 1 || choice > 7) 
 				{
 	                cout << "Invalid Input. Please Enter again: ";
 	                cin >> choice;
@@ -354,13 +457,13 @@ class Menu
 	            } 
 				else if (choice == 3) 
 				{
-
+					q.display_sorted();
 	            } 
 				else if (choice == 4) 
 				{
 				
 	            }
-	        }while (choice !=6);
+	        }while (choice !=7);
 	        
 	    }
 };
