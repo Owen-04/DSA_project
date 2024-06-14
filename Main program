@@ -135,16 +135,19 @@ class Stack_Inventory {
             Strgtop = -1;
             dbletop = -1;
             intop = -1;
+            n=0;
             getarray_Size();
         }
 
         void getarray_Size() {
             ifstream File;
             File.open("Inventory.txt");
-            n = 0;
             while (File >> inv.item_number >> inv.name >> inv.category >> inv.qty >> inv.price >> inv.total) {
                 n+=4;
             }
+            if(n==0){
+            	n=100;
+			}
             nameAndcategory = new string[n * 2];
             numberAndQty = new int[n * 2];
             priceAndtotal = new double[n * 2];
@@ -364,6 +367,14 @@ class Stack_user{
 		    return (top < 0);
 		}
 
+};
+
+class User{
+	private:
+		User_Info u;
+	public:
+		
+	
 };
 
 //display list class
