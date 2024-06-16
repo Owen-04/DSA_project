@@ -1,0 +1,684 @@
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+#include <conio.h>
+#include <cstring>
+#include<vector>
+#include <limits>
+using namespace std;
+//Inventory data
+struct InventoryItem 
+{
+    int item_number, qty;
+    string name, category;
+    double price, total;
+};
+
+
+struct User_Info{
+	string name;
+	string password;
+	string ID;
+};
+// Function declaration
+void editInventory(vector<InventoryItem>& inventory);
+class QuickSort{
+	private:
+	    int* itemNumbers;
+	    int* index;
+		int n,confirm;
+		InventoryItem inv;
+	
+	public:
+		QuickSort(){
+			n=0;
+			confirm=0;
+		}
+		
+	    ~QuickSort() {
+	        delete[] itemNumbers;
+	        delete[] index;
+	    }
+	
+	    void getarray() {
+	        ifstream file("Inventory.txt");
+	        n = 0;
+	        while (file >> inv.item_number >> inv.name >> inv.category >> inv.qty >> inv.price >> inv.total) {
+	            n++;
+	        }
+	        file.close();
+	
+	        itemNumbers = new int[n];
+	        index = new int[n];
+	
+	        file.open("Inventory.txt");
+	        int i = 0;
+	        while (file >> inv.item_number >> inv.name >> inv.category >> inv.qty >> inv.price >> inv.total) {
+	            itemNumbers[i] = inv.item_number;
+	            index[i] = i;//track of the original positions of the items in the file
+	            i++;
+	        }
+	        file.close();
+	    }
+		
+		int partition(int start, int end){
+	        int pivot = itemNumbers[start];
+	        int count = 0;
+	        for (int i = start + 1; i <= end; i++){
+	            if (itemNumbers[i] <= pivot)
+	                count++;
+	        }
+	
+	        int pivotIndex = start + count;
+	        swap(itemNumbers[pivotIndex], itemNumbers[start]);
+	        swap(index[pivotIndex], index[start]);
+	
+	        int i = start, j = end;
+	
+	        while (i < pivotIndex && j > pivotIndex) {
+	            while (itemNumbers[i] <= pivot) {
+	                i++;
+	            }
+	            while (itemNumbers[j] > pivot) {
+	                j--;
+	            }
+	            if (i < pivotIndex && j > pivotIndex) {
+	                swap(itemNumbers[i], itemNumbers[j]);
+	                swap(index[i], index[j]);
+	            }
+	        }
+	        return pivotIndex;
+	    }
+	
+	    void quickSort(int start, int end) {
+	        if (start >= end)
+	            return;
+	
+	        int p = partition(start, end);
+	
+	        quickSort(start, p - 1);
+	        quickSort(p + 1, end);
+	    }
+	
+	    void display_sorted() {
+	        getarray();
+	        quickSort(0, n - 1);
+	
+	        InventoryItem* items = new InventoryItem[n];
+	        ifstream file("Inventory.txt");
+	        int i = 0;
+	        while (file >> items[i].item_number >> items[i].name >> items[i].category >> items[i].qty >> items[i].price >> items[i].total) {
+	            i++;
+	        }
+	        file.close();
+	
+	        cout << "Item Number" << setw(20) << "Item Name" << setw(20) << "Item Category" << setw(20) << "Item QTY" << setw(20) << "Item Unit Price" << setw(20) << "Total Price" << endl;
+	        for (int k = 0; k < n; ++k) {
+	            int idx = index[k];
+	            cout << items[idx].item_number << setw(25) << items[idx].name << setw(20) << items[idx].category << setw(20) << items[idx].qty << setw(20) << items[idx].price << setw(20) << items[idx].total << endl;
+	        }
+	
+	        delete[] items;
+	    }
+	    
+void populateInventory(vector<InventoryItem>& inventory) {
+    ifstream file("Inventory.txt");
+    inventory.clear(); // Clear the vector to ensure it's empty before populating
+    while (file >> inv.item_number >> inv.name >> inv.category >> inv.qty >> inv.price >> inv.total) {
+        inventory.push_back(inv);
+    }
+    file.close();
+}
+
+};
+
+
+
+class Stack_Inventory {
+    private:
+        int intop, Strgtop, dbletop;
+        string *nameAndcategory;
+        int *numberAndQty;
+        double *priceAndtotal;
+        int n,i;
+        InventoryItem inv;
+
+    public:
+        Stack_Inventory() {
+            Strgtop = -1;
+            dbletop = -1;
+            intop = -1;
+            n=0;
+            getarray_Size();
+        }
+
+        void getarray_Size() {
+            ifstream File;
+            File.open("Inventory.txt");
+            while (File >> inv.item_number >> inv.name >> inv.category >> inv.qty >> inv.price >> inv.total) {
+                n+=4;
+            }
+            if(n==0){
+            	n=100;
+			}
+            nameAndcategory = new string[n * 2];
+            numberAndQty = new int[n * 2];
+            priceAndtotal = new double[n * 2];
+            i=0;
+            while(File >> inv.item_number >> inv.name >> inv.category >> inv.qty >> inv.price >> inv.total){
+            	numberAndQty[i]=inv.item_number;
+            	numberAndQty[i+1]=inv.qty;
+				nameAndcategory[i]=inv.name;
+				nameAndcategory[i+1]=inv.category;
+				priceAndtotal[i]=inv.price;
+				priceAndtotal[i+1]=inv.total;
+				i+=2;
+			}
+			File.close();
+        }
+
+        bool push_string(string x) {
+            if (Strgtop >= (n - 1)) {
+                cout << "Stack Overflow";
+                return false;
+            } else {
+                nameAndcategory[++Strgtop] = x;
+                return true;
+            }
+        }
+
+        string pop_string() {
+            if (Strgtop < 0) {
+                cout << "Stack Underflow";
+                return "";
+            } else {
+                string x = nameAndcategory[Strgtop--];
+                return x;
+            }
+        }
+
+        string peek_string() {
+            if (Strgtop < 0) {
+                cout << "Stack is Empty";
+                return "";
+            } else {
+                string x = nameAndcategory[Strgtop];
+                return x;
+            }
+        }
+
+        bool isEmpty_string() {
+            return (Strgtop < 0);
+        }
+
+        // For int type data
+        bool push_INT(int x) {
+            if (intop >= (n - 1)) {
+                cout << "Stack Overflow";
+                return false;
+            } else {
+                numberAndQty[++intop] = x;
+                return true;
+            }
+        }
+
+        int pop_INT() {
+            if (intop < 0) {
+                cout << "Stack Underflow";
+                return 0;
+            } else {
+                int x = numberAndQty[intop--];
+                return x;
+            }
+        }
+
+        int peek_INT() {
+            if (intop < 0) {
+                cout << "Stack is Empty";
+                return 0;
+            } else {
+                int x = numberAndQty[intop];
+                return x;
+            }
+        }
+
+        bool isEmpty_INT() {
+            return (intop < 0);
+        }
+
+        // For double type data
+        bool push_dble(double x) {
+            if (dbletop >= (n - 1)) {
+                cout << "Stack Overflow";
+                return false;
+            } else {
+                priceAndtotal[++dbletop] = x;
+                return true;
+            }
+        }
+
+        double pop_dble() {
+            if (dbletop < 0) {
+                cout << "Stack Underflow";
+                return 0;
+            } else {
+                double x = priceAndtotal[dbletop--];
+                return x;
+            }
+        }
+
+        double peek_dble() {
+            if (dbletop < 0) {
+                cout << "Stack is Empty";
+                return 0;
+            } else {
+                double x = priceAndtotal[dbletop];
+                return x;
+            }
+        }
+
+        bool isEmpty_dble() {
+            return (dbletop < 0);
+        }
+
+        void store() {
+            InventoryItem tempItem;
+            int existingItemNumbers[1000]; 
+            int exisCount = 0;
+
+            ifstream inputFile("Inventory.txt");
+            while (inputFile >> tempItem.item_number >> tempItem.name >> tempItem.category >> tempItem.qty >> tempItem.price >> tempItem.total) {
+                existingItemNumbers[exisCount++] = tempItem.item_number;
+            }
+            inputFile.close();
+
+            fstream file;
+            file.open("Inventory.txt", ios::app);
+
+            int i = 0;
+            while (i <= intop) {
+                int currentItemNumber = numberAndQty[i];
+                bool isExis = false;//check existing or not
+
+                for (int j = 0; j < exisCount; j++) {
+                    if (existingItemNumbers[j] == currentItemNumber) {
+                        isExis = true;
+                        break;
+                    }
+                }
+
+
+                if (!isExis) {
+                    file << numberAndQty[i] << " " << nameAndcategory[i] << " " << nameAndcategory[i + 1] << " "<< numberAndQty[i + 1] << " " << priceAndtotal[i] << " " << priceAndtotal[i + 1] << endl;
+                    existingItemNumbers[exisCount++] = currentItemNumber;
+                }
+                i += 2;
+            }
+            file.close();
+        }
+};
+
+class Stack_user{
+	private:
+		int top;
+		string *a;
+		int n;
+		User_Info u;
+	public:
+		Stack_user(){
+			top=-1;
+			setarray_Size();
+		}
+		void setarray_Size(){
+			ifstream File;
+			File.open("Inventory.txt");
+			n=0;
+			while(File>>u.ID>>u.name>>u.password){
+				n++;
+			}
+			a = new string[n];
+		}
+		
+		bool push(string x)
+		{
+		    if (top >= (n - 1)) {
+		        cout << "Stack Overflow";
+		        return false;
+		    }
+		    else {
+		        a[++top] = x;
+		        cout << x << " pushed into stack\n";
+		        return true;
+		    }
+		}
+		
+		string pop()
+		{
+		    if (top < 0) {
+		        cout << "Stack Underflow";
+		        return 0;
+		    }
+		    else {
+		        string x = a[top--];
+		        return x;
+		    }
+		}
+		string peek()
+		{
+		    if (top < 0) {
+		        cout << "Stack is Empty";
+		        return 0;
+		    }
+		    else {
+		        string x = a[top];
+		        return x;
+		    }
+		}
+		
+		bool isEmpty()
+		{
+		    return (top < 0);
+		}
+
+};
+
+class User{
+	private:
+		User_Info u;
+	public:
+		
+	
+};
+
+//display list class
+class display_list 
+{
+	private:
+		InventoryItem in;
+	    ifstream File;
+	    
+	public:
+	    void view_list() 
+		{
+	        cout << "----------------------------------------------" << endl;
+	        cout << "List of Inventory in Warehouse" << endl;
+	        cout << "----------------------------------------------" << endl;
+	        File.open("Inventory.txt");
+	        if (!File) 
+			{
+	            cout << "No inventory found." << endl;
+	            return;
+	        }
+	        cout << "Item Number" << setw(20) << "Item Name" << setw(20) << "Item Category" << setw(20) << "Item QTY" << setw(20) << "Item Unit Price" << setw(20) << "Total Price" << endl;
+	        while (File >> in.item_number >> in.name >> in.category >> in.qty >> in.price >> in.total) {
+	            cout << in.item_number << setw(20) << in.name << setw(20) << in.category << setw(20) << in.qty << setw(20) << in.price << setw(20) << in.total << endl;
+	        }
+	        File.close();
+	    }
+};
+
+class add_inventory 
+{
+	private:
+	    display_list d;
+	    InventoryItem in;
+	    fstream File;
+	    int choice;
+	    Stack_Inventory stack;
+	    
+	public:
+	    add_inventory() : choice(0), File("Inventory.txt", ios::app) {}
+	
+	    void subMenu();
+	    void add();
+};
+
+// Main Menu
+class Menu 
+{
+	private:
+	    add_inventory a;
+	    display_list v;
+		QuickSort q;
+		vector<InventoryItem> inventory;
+	public:
+	    void main_menu() 
+		{
+			vector<InventoryItem> inventory;
+		 q.populateInventory(inventory);
+	        int choice = 0;
+	        int action = 0;
+	        do {
+	            cout << "----------------------------------------------" << endl;
+	            cout << "Welcome to Warehouse Inventory Management" << endl;
+	            cout << "----------------------------------------------" << endl;
+	            cout << "1. Add Inventory" << endl;
+	            cout << "2. Inventory List (Unsorted)" << endl;
+	            cout<<"3. Inventory List(Sorted) "<<endl;
+	            cout << "4. Edit Inventory  " << endl;
+	            cout << "5. Delete Inventory" << endl;
+	            cout << "6. Search Inventory" << endl;
+	            cout << "7. Exit" << endl;
+	            cout << "Enter choice: ";
+	            cin >> choice;
+	
+	            while (choice < 1 || choice > 7) 
+				{
+	                cout << "Invalid Input. Please Enter again: ";
+	                cin >> choice;
+	            }
+	            
+	
+	            if (choice == 1) 
+				{
+	                a.subMenu();
+	            } 
+				else if (choice == 2) 
+				{
+					cout<<endl;
+					cout<<endl;
+	                v.view_list();
+	                cout<<endl;
+	                cout<<endl;
+	            } 
+				else if (choice == 3) 
+				{
+					q.display_sorted();
+	            } 
+				else if (choice == 4) 
+				{
+                    editInventory(inventory);
+                    break;
+	            }
+	        }while (choice !=7);
+	        
+	    }
+};
+
+// Definition of the display function outside the add_inventory class so it can access the Menu
+void add_inventory::subMenu() 
+{
+    Menu M;
+    do{
+        cout << "------------------------------------" << endl;
+        cout << "Add Inventory Page" << endl;
+        cout << "------------------------------------" << endl;
+        cout << "1. Add Inventory" << endl;
+        cout << "2. Inventory List" << endl;
+        cout << "3. Back to Main Menu" << endl;
+        cout << "Enter choice: ";
+        cin >> choice;
+
+        if (choice < 1 || choice > 3) 
+		{
+            cout << "Invalid Input. Please Enter again." << endl;
+        }
+	    if (choice == 1) 
+		{
+			cout<<endl;
+	        add();
+	        cout<<endl;
+	    } 
+		else if (choice == 2) 
+		{
+			cout<<endl;
+	        d.view_list();
+	        cout<<endl;
+	    } 
+
+    }while (choice!=3);
+	system("cls");
+	M.main_menu();	
+
+
+}
+// Definition of the add function outside the add_inventory class so it can access the Menu
+void add_inventory::add() {
+    cout << "Enter the item number: ";
+    cin >> in.item_number;
+    stack.push_INT(in.item_number);
+    cout << endl;
+
+    cout << "Enter the name: ";
+    cin >> in.name;
+    stack.push_string(in.name);
+    cout << endl;
+
+    cout << "Enter the category: ";
+    cin >> in.category;
+    stack.push_string(in.category);
+    cout << endl;
+
+    cout << "Enter the QTY: ";
+    cin >> in.qty;
+    stack.push_INT(in.qty);
+    cout << endl;
+
+    cout << "Enter the unit price: RM";
+    cin >> in.price;
+    stack.push_dble(in.price);
+    cout << endl;
+
+    in.total = in.qty * in.price;
+    stack.push_dble(in.total);
+    cout << endl;
+
+    char confirm;
+    cout << "Confirm add item (y/n): ";
+    cin >> confirm;
+    if (confirm == 'y' || confirm == 'Y') {
+        stack.store();
+    } else {
+        
+        cout << "Item not added." << endl;
+    }
+}
+void editInventory(vector<InventoryItem>& inventory) {
+    int choice;
+    do {
+        cout << "------------------------------------\n";
+        cout << "Edit Inventory Page\n";
+        cout << "------------------------------------\n";
+        cout << "1. Edit Inventory\n";
+        cout << "2. Inventory List\n";
+        cout << "3. Back to Main Menu\n";
+        cout << "Enter choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1: {
+                int item_number;
+                cout << "Enter the item number that you want to edit: ";
+                cin >> item_number;
+
+                bool found = false;
+                for (auto& item : inventory) {
+                    if (item.item_number == item_number) {
+                        string newName, newCategory;
+                        int newQty;
+                        double newPrice;
+
+                        cout << "Current Name : " << item.name << "\n";
+                        cout << "Edit the Name : ";
+                        cin >> newName;
+
+                        cout << "Current Category : " << item.category << "\n";
+                        cout << "Edit the Category : ";
+                        cin >> newCategory;
+
+                        cout << "Current QTY : " << item.qty << "\n";
+                        cout << "Edit the QTY : ";
+                        while (!(cin >> newQty)) {
+                            cout << "Error: Please enter a valid number. Edit the QTY : ";
+                            cin.clear();
+                            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                        }
+
+                        cout << "Current Unit Price : RM " << item.price << "\n";
+                        cout << "Edit the unit price: RM ";
+                        while (!(cin >> newPrice)) {
+                            cout << "Error: Please enter a valid number. Edit the unit price: RM ";
+                            cin.clear();
+                            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                        }
+
+                        char confirm;
+                        cout << "Confirm edit item (y/n): ";
+                        cin >> confirm;
+                        if (confirm == 'y' || confirm == 'Y') {
+                            item.name = newName;
+                            item.category = newCategory;
+                            item.qty = newQty;
+                            item.price = newPrice;
+                            item.total = item.qty * item.price;
+                            found = true;
+                            break; // Exit the loop once item is found and edited
+                        } else {
+                            cout << "Edit cancelled.\n";
+                        }
+                    }
+                }
+
+                if (!found) {
+                    cout << "Item number not found.\n";
+                } else {
+                    // Update Inventory.txt with the edited inventory
+                    ofstream file("Inventory.txt");
+                    if (file.is_open()) {
+                        for (const auto& item : inventory) {
+                            file << item.item_number << " " << item.name << " " << item.category << " "
+                                 << item.qty << " " << item.price << " " << item.total << "\n";
+                        }
+                        file.close();
+                        cout << "Inventory updated successfully.\n";
+                    } else {
+                        cout << "Error: Unable to open file for writing.\n";
+                    }
+                }
+                break;
+            }
+            case 2: {
+                // Display inventory list
+                cout << endl;
+                display_list d;
+                d.view_list();
+                cout << endl;
+                break;
+            }
+            case 3: {
+                // Back to main menu
+                cout << "Returning to main menu.\n";
+                break;
+            }
+            default:
+                cout << "Invalid choice. Please enter again.\n";
+        }
+    } while (choice != 3);
+}
+
+int main() 
+{
+    Menu menu;
+    menu.main_menu();
+    return 0;
+}
